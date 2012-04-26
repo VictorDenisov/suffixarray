@@ -1,0 +1,13 @@
+Name:           suffixarray
+Version:        1.0
+Description:    n log n implementation of suffux array.
+License:        GPL
+License-file:   LICENSE
+Author:	        Victor Denisov
+Maintainer:     denisovenator@gmail.com
+Build-type:     Simple
+Cabal-version:  >=1.2
+
+library
+     exposed-modules:        Data.SuffixArray
+     build-depends:          base >= 3, vector, array
