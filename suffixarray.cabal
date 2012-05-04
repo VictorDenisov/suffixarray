@@ -8,6 +8,10 @@ Maintainer:     denisovenator@gmail.com
 Build-type:     Simple
 Cabal-version:  >=1.2
 
-library
-     exposed-modules:        Data.SuffixArray
-     build-depends:          base >= 3, vector, array
+Executable main
+        main-is:        Main.hs
+        build-depends:  base >= 3
+
+Library
+        exposed-modules:        Data.SuffixArray, Data.Auxiliary
+        build-depends:          base >= 3, array
