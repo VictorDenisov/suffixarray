@@ -57,8 +57,8 @@ partialSumsIO n s = foldl' step s [1..(n - 1)]
             
 {- countOccurences implementation -}
 
-countOccurences :: (Ix a, Ord a, Bounded a, Show a) => [a] -> [Int]
-countOccurences s | trace ("countOccurences: " ++ (show s)) False = undefined
+countOccurences :: (Ix a, Ord a, Bounded a) => [a] -> [Int]
+--countOccurences s | trace ("countOccurences: " ++ (show s)) False = undefined
 countOccurences s = unsafePerformIO $ do
         arr <- countOccurencesIO s
         peekArray rs arr

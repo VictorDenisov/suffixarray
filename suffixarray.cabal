@@ -8,9 +8,9 @@ Maintainer:     denisovenator@gmail.com
 Build-type:     Simple
 Cabal-version:  >=1.2
 
-Executable main
-        main-is:        Main.hs
-        build-depends:  base >= 3
+Executable runTests
+        main-is:        Tests/Tests.hs
+        build-depends:  base >= 3, HUnit
 
 Library
         exposed-modules:        Data.SuffixArray, Data.Auxiliary
