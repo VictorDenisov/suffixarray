@@ -5,17 +5,18 @@ import Test.HUnit
 import Data.Ix
 import Data.SuffixArray
 import Data.CountingSort
+import qualified Data.Vector as V
 
 testCountOccurences :: (Ix a, Ord a, Bounded a, Show a)  => [a] -> [Int] -> Test
 testCountOccurences testData answer = TestCase (
     assertEqual ("countOccurences " ++ (show testData))
-        answer (countOccurences testData)
+        answer (V.toList $ countOccurences testData)
     )
 
 testPartialSums :: [Int] -> [Int] -> Test
 testPartialSums testData answer = TestCase (
     assertEqual ("partialSums " ++ (show testData))
-        answer (partialSums testData)
+        answer (V.toList $ partialSums $ V.fromList testData)
     )
 
 tests = TestList

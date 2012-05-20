@@ -14,4 +14,4 @@ Executable runTests
 
 Library
         exposed-modules:        Data.SuffixArray, Data.CountingSort
-        build-depends:          base >= 3, array
+        build-depends:          base >= 3, array, vector

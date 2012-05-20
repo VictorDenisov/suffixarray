@@ -9,6 +9,9 @@ import Foreign.Ptr
 import Data.Bits (shiftL)
 import Data.Array.IArray
 import Debug.Trace
+import qualified Data.Vector as V
+import qualified Data.Vector.Generic.Mutable as MVector
+import Control.Monad (forM_)
 
 {- counting sort implementation -}
 
@@ -23,55 +26,37 @@ countingSortIO s indexes = withArray s $ \ss -> let
         go (-1) p a = return a
         go i p a = do
             x <- peekElemOff ss i -- x = s[i]
-            pos <- peekElemOff p (index rng x) -- pos = p[x]
+            pos <- p `MVector.read` (index rng x) -- pos = p[x]
             pokeElemOff a (pos - 1) (indexes ! i) -- a [pos - 1] = indexes[i]
-            pokeElemOff p (index rng x) (pos - 1) -- p[x] -= 1
+            MVector.write p (index rng x) (pos - 1) -- p[x] -= 1
             go (i - 1) p a
         in do
-            p <- partialSumsIO n (countOccurencesIO s)
+            let occurences = countOccurences s
+            let p = partialSums occurences
             ans <- mallocArray n
-            go (n - 1) p ans
+            pp <- V.unsafeThaw p
+            go (n - 1) pp ans
     where
         n = length s
         rng = (minimum s, maximum s)
 
 {- partial sums implementation -}
 
-partialSums :: [Int] -> [Int]
-partialSums a = unsafePerformIO $ do
-        arr <- partialSumsIO n (newArray a)
-        peekArray n arr
-    where n = length a
 
-partialSumsIO :: Int -> IO (Ptr Int) -> IO (Ptr Int)
-partialSumsIO n s = foldl' step s [1..(n - 1)]
-    where
-        step arr i = do
-            a <- arr
-            k <- peekElemOff a i
-            prev <- peekElemOff a (i - 1)
-            pokeElemOff a i (prev + k)
-            return a
+partialSums :: V.Vector Int -> V.Vector Int
+partialSums = V.postscanl (+) 0
+
             
 {- count occurences implementation -}
 
-countOccurences :: (Ix a, Ord a, Bounded a) => [a] -> [Int]
+countOccurences :: (Ix a, Ord a, Bounded a) => [a] -> V.Vector Int
 countOccurences s = unsafePerformIO $ do
-        arr <- countOccurencesIO s
-        peekArray rs arr
-    where
-        rng = (minimum s, maximum s)
-        rs = rangeSize rng
-
-countOccurencesIO :: (Ix a, Ord a, Bounded a) => [a] -> IO (Ptr Int)
-countOccurencesIO s = foldr step (mallocArray rs) s
-    where
-        rng = (minimum s, maximum s)
-        rs = rangeSize rng
-        step c pp = do
-            p <- pp
-            let a = index rng c
-            x <- peekElemOff p a
-            pokeElemOff p a (x + 1)
-            return p
+    let rng = (minimum s, maximum s)
+    let rs = rangeSize rng
+    arr <- MVector.replicate rs 0
+    forM_ s $ \c -> do
+        let a = index rng c
+        value <- MVector.read arr a
+        MVector.write arr a (value + 1)
+    V.unsafeFreeze arr
 
