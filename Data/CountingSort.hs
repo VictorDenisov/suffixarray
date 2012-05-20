@@ -1,4 +1,4 @@
-module Data.Auxiliary where
+module Data.CountingSort where
 
 import Data.Ix
 import Data.List (foldl', (!!))
@@ -10,10 +10,9 @@ import Data.Bits (shiftL)
 import Data.Array.IArray
 import Debug.Trace
 
-{- countingSort implementation -}
+{- counting sort implementation -}
 
-countingSort :: (Ix a, Ord a, Bounded a, Storable a, Show a) => [a] -> Array Int Int -> [Int]
-countingSort s indexes | trace ("countingSort: s - " ++ (show s) ++ ", indexes - " ++ (show indexes)) False = undefined
+countingSort :: (Ix a, Ord a, Bounded a, Storable a) => [a] -> Array Int Int -> [Int]
 countingSort s indexes = unsafePerformIO $ do 
         arr <- countingSortIO s indexes
         peekArray n arr
@@ -36,10 +35,9 @@ countingSortIO s indexes = withArray s $ \ss -> let
         n = length s
         rng = (minimum s, maximum s)
 
-{- partialSums implementation -}
+{- partial sums implementation -}
 
 partialSums :: [Int] -> [Int]
-partialSums a | trace ("partialSums: " ++ (show a)) False = undefined
 partialSums a = unsafePerformIO $ do
         arr <- partialSumsIO n (newArray a)
         peekArray n arr
@@ -55,10 +53,9 @@ partialSumsIO n s = foldl' step s [1..(n - 1)]
             pokeElemOff a i (prev + k)
             return a
             
-{- countOccurences implementation -}
+{- count occurences implementation -}
 
 countOccurences :: (Ix a, Ord a, Bounded a) => [a] -> [Int]
---countOccurences s | trace ("countOccurences: " ++ (show s)) False = undefined
 countOccurences s = unsafePerformIO $ do
         arr <- countOccurencesIO s
         peekArray rs arr

@@ -11,7 +11,7 @@ import Data.Bits (shiftL)
 import Data.Array.IArray
 import Debug.Trace
 
-import Data.Auxiliary
+import Data.CountingSort
 
 (<<) = shiftL
 

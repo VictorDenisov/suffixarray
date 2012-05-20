@@ -13,5 +13,5 @@ Executable runTests
         build-depends:  base >= 3, HUnit
 
 Library
-        exposed-modules:        Data.SuffixArray, Data.Auxiliary
+        exposed-modules:        Data.SuffixArray, Data.CountingSort
         build-depends:          base >= 3, array
