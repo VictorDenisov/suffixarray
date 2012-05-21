@@ -33,8 +33,8 @@ countingSortIO s indexes = withArray s $ \ss -> let
         in do
             let occurences = countOccurences s
             let p = partialSums occurences
-            ans <- mallocArray n
             pp <- V.unsafeThaw p
+            ans <- mallocArray n
             go (n - 1) pp ans
     where
         n = length s
