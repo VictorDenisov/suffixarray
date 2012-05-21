@@ -40,6 +40,11 @@ countingSortIO s indexes = withArray s $ \ss -> let
         n = length s
         rng = (minimum s, maximum s)
 
+ifoldr_ :: Vector a -> (Int -> a -> IO ()) -> IO ()
+ifoldr_ v f = V.ifoldr' f' (IO ()) v
+    where
+        f' i x _ = f i x
+
 {- partial sums implementation -}
 
 
