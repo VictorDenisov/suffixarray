@@ -19,6 +19,13 @@ testPartialSums testData answer = TestCase (
         answer (V.toList $ partialSums $ V.fromList testData)
     )
 
+testCountingSort :: String -> [Int] -> [Int] -> Test
+testCountingSort testList testIndexes answer = TestCase (
+    assertEqual
+        ("countingSort " ++ (show testList) ++ " " ++ (show testIndexes))
+        answer (countingSort testList testIndexes)
+    )
+
 tests = TestList
             [ TestLabel "countOccurences tests" $ TestList
                  [ testCountOccurences "abc" [1, 1, 1]
@@ -31,6 +38,9 @@ tests = TestList
             , TestLabel "partialSums tests" $ TestList
                  [ testPartialSums [1, 1, 1] [1, 2, 3]
                  , testPartialSums [1, 0, 5, 2] [1, 1, 6, 8]
+                 ]
+            , TestLabel "countingSort tests" $ TestList
+                 [ testCountingSort "bcb" [0, 1, 2] [0, 2, 1]
                  ]
             ]
 

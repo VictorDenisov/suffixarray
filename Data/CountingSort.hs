@@ -11,39 +11,35 @@ import Data.Array.IArray
 import Debug.Trace
 import qualified Data.Vector as V
 import qualified Data.Vector.Generic.Mutable as MVector
-import Control.Monad (forM_)
+import Control.Monad (forM_, zipWithM_)
 
 {- counting sort implementation -}
 
-countingSort :: (Ix a, Ord a, Bounded a, Storable a) => [a] -> Array Int Int -> [Int]
-countingSort s indexes = unsafePerformIO $ do 
-        arr <- countingSortIO s indexes
-        peekArray n arr
-    where n = length s
+countingSort :: (Ix a, Ord a, Bounded a, Storable a, Show a) => [a] -> [Int] -> [Int]
+countingSort s indexes = V.toList
+                       $ unsafePerformIO
+                       $ countingSortIO s indexes
 
-countingSortIO :: (Ix a, Ord a, Bounded a, Storable a)  => [a] -> Array Int Int -> IO (Ptr Int)
-countingSortIO s indexes = withArray s $ \ss -> let
-        go (-1) p a = return a
-        go i p a = do
-            x <- peekElemOff ss i -- x = s[i]
-            pos <- p `MVector.read` (index rng x) -- pos = p[x]
-            pokeElemOff a (pos - 1) (indexes ! i) -- a [pos - 1] = indexes[i]
-            MVector.write p (index rng x) (pos - 1) -- p[x] -= 1
-            go (i - 1) p a
-        in do
-            let occurences = countOccurences s
-            let p = partialSums occurences
-            pp <- V.unsafeThaw p
-            ans <- mallocArray n
-            go (n - 1) pp ans
+countingSortIO :: (Ix a, Ord a, Bounded a, Storable a, Show a)  => [a] -> [Int] -> IO (V.Vector Int)
+countingSortIO s indexes = do
+    let n = length s
+    let rng = (minimum s, maximum s)
+    let ind = V.fromList indexes
+    let ss = V.fromList s
+    let occurences = countOccurences s
+    let p = partialSums occurences
+    pp <- V.unsafeThaw p
+    ans <- MVector.replicate n 0
+    iforeach s $ \i x -> do
+        pos <- pp `MVector.read` (index rng x)
+        MVector.write ans (pos - 1) (ind V.! i)
+        MVector.write pp (index rng x) (pos - 1)
+    V.unsafeFreeze ans
+
+iforeach :: (Ix a, Ord a, Bounded a, Storable a, Show a)  => [a] -> (Int -> a -> IO ()) -> IO ()
+iforeach s f = zipWithM_ f (reverse [0..(n - 1)]) (reverse s)
     where
         n = length s
-        rng = (minimum s, maximum s)
-
-ifoldr_ :: Vector a -> (Int -> a -> IO ()) -> IO ()
-ifoldr_ v f = V.ifoldr' f' (IO ()) v
-    where
-        f' i x _ = f i x
 
 {- partial sums implementation -}
 

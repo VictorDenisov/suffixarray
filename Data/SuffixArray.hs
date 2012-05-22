@@ -25,7 +25,7 @@ fancyEquator s indexes h n i j = (s !! (indexes !! i)) == (s !! (indexes !! j)) 
 
 -- |Generate a suffix array as list.
 suffixArray :: (Ix a, Ord a, Bounded a, Storable a, Show a) => [a] -> ([Int], [Int])
-suffixArray s = let p = countingSort s $ listArray (0, n - 1) [0..(n - 1)]
+suffixArray s = let p = countingSort s [0..(n - 1)]
                     c = trace ("p = " ++ (show p)) $ populateClassesBy (simpleEquator s p) s p
                 in trace ("c = " ++ (show c)) $ go 0 p c
     where
@@ -34,7 +34,7 @@ suffixArray s = let p = countingSort s $ listArray (0, n - 1) [0..(n - 1)]
         go h p c = let
             pn = shiftList n h p
             ck = trace ("pn = " ++ (show pn)) $ composeLists c pn
-            p' = trace ("cpn = " ++ (show ck)) $ countingSort ck $ listArray (0, n - 1) pn
+            p' = trace ("cpn = " ++ (show ck)) $ countingSort ck pn
             c' = trace ("p' = " ++ (show p')) $ populateClassesBy (fancyEquator c p' h n) c p'
             in trace ("c' = " ++ (show c')) $ go (h + 1) p' c'
 
