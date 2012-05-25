@@ -41,6 +41,7 @@ tests = TestList
                  ]
             , TestLabel "countingSort tests" $ TestList
                  [ testCountingSort "bcb" [0, 1, 2] [0, 2, 1]
+                 , testCountingSort "bcb" [2, 1, 0] [2, 0, 1]
                  ]
             ]
 

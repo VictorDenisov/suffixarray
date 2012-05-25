@@ -30,14 +30,14 @@ countingSortIO s indexes = do
     let p = partialSums occurences
     pp <- V.unsafeThaw p
     ans <- MVector.replicate n 0
-    iforeach s $ \i x -> do
+    iforeachr s $ \i x -> do
         pos <- pp `MVector.read` (index rng x)
         MVector.write ans (pos - 1) (ind V.! i)
         MVector.write pp (index rng x) (pos - 1)
     V.unsafeFreeze ans
 
-iforeach :: (Ix a, Ord a, Bounded a, Storable a, Show a)  => [a] -> (Int -> a -> IO ()) -> IO ()
-iforeach s f = zipWithM_ f (reverse [0..(n - 1)]) (reverse s)
+iforeachr :: (Ix a, Ord a, Bounded a, Storable a, Show a)  => [a] -> (Int -> a -> IO ()) -> IO ()
+iforeachr s f = zipWithM_ f (reverse [0..(n - 1)]) (reverse s)
     where
         n = length s
 
