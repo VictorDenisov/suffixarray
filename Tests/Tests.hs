@@ -26,6 +26,12 @@ testCountingSort testList testIndexes answer = TestCase (
         answer (countingSort testList testIndexes)
     )
 
+testSuffixArray :: String -> [Int] -> Test
+testSuffixArray testData answer = TestCase (
+    assertEqual ("suffixArray " ++ (show testData))
+        answer (fst $ suffixArray testData)
+    )
+
 tests = TestList
             [ TestLabel "countOccurences tests" $ TestList
                  [ testCountOccurences "abc" [1, 1, 1]
@@ -42,6 +48,12 @@ tests = TestList
             , TestLabel "countingSort tests" $ TestList
                  [ testCountingSort "bcb" [0, 1, 2] [0, 2, 1]
                  , testCountingSort "bcb" [2, 1, 0] [2, 0, 1]
+                 ]
+            , TestLabel "suffixArray tests" $ TestList
+                 [ testSuffixArray "abcb" [0, 3, 1, 2]
+                 , testSuffixArray "aaba" [3, 0, 1, 2]
+                 , testSuffixArray "abc" [0, 1, 2]
+                 , testSuffixArray "eefdcba" [6, 5, 4, 3, 0, 1, 2]
                  ]
             ]
 
