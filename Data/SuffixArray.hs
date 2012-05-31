@@ -8,25 +8,28 @@ import Foreign.Storable
 import Foreign.Marshal.Array
 import Foreign.Ptr
 import Data.Bits (shiftL)
-import Data.Array.IArray
 import Debug.Trace
+import qualified Data.Vector as V
 
 import Data.CountingSort
 
 (<<) = shiftL
 
-
 type Equator = Int -> Int -> Bool
 
-simpleEquator s indexes i j = (s !! (indexes !! i)) == (s !! (indexes !! j))
-fancyEquator s indexes h n i j = (s !! (indexes !! i)) == (s !! (indexes !! j)) && (s !! mid1) == (s !! mid2)
-    where mid1 = (((indexes !! i) + (1 << h)) `mod` n)
-          mid2 = (((indexes !! j) + (1 << h)) `mod` n)
+simpleEquator :: (Ix a, Ord a, Bounded a, Storable a, Show a) => V.Vector a -> V.Vector Int -> Int -> Int -> Bool
+simpleEquator s indexes i j = (s V.! (indexes V.! i)) == (s V.! (indexes V.! j))
+
+fancyEquator :: (Ix a, Ord a, Bounded a, Storable a, Show a) => V.Vector a -> V.Vector Int -> Int -> Int -> Int -> Int -> Bool
+fancyEquator s indexes h n i j = (s V.! (indexes V.! i)) == (s V.! (indexes V.! j)) && (s V.! mid1) == (s V.! mid2)
+    where mid1 = (((indexes V.! i) + (1 << h)) `mod` n)
+          mid2 = (((indexes V.! j) + (1 << h)) `mod` n)
 
 -- |Generate a suffix array as list.
 suffixArray :: (Ix a, Ord a, Bounded a, Storable a, Show a) => [a] -> ([Int], [Int])
 suffixArray s = let p = countingSort s [0..(n - 1)]
-                    c = populateClassesBy (simpleEquator s p) s p
+                    equator = simpleEquator (V.fromList s) (V.fromList p)
+                    c = populateClassesBy equator s p
                 in go 0 p c
     where
         n = length s
@@ -35,7 +38,8 @@ suffixArray s = let p = countingSort s [0..(n - 1)]
             pn = shiftList n h p
             ck = composeLists c pn
             p' = countingSort ck pn
-            c' =  populateClassesBy (fancyEquator c p' h n) c p'
+            equator = fancyEquator (V.fromList c) (V.fromList p') h n
+            c' =  populateClassesBy equator c p'
             in go (h + 1) p' c'
 
 {- axilliary?spelling functions -}
