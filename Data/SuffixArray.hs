@@ -15,18 +15,26 @@ import Data.CountingSort
 
 (<<) = shiftL
 
+{- Equator is a function that takes two indexes and returns true if values
+ - pointed by them are equal. -}
 type Equator = Int -> Int -> Bool
 
-simpleEquator :: (Ix a, Ord a, Bounded a, Storable a, Show a) => V.Vector a -> V.Vector Int -> Int -> Int -> Bool
+simpleEquator :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+               => V.Vector a -> V.Vector Int -> Int -> Int -> Bool
 simpleEquator s indexes i j = (s V.! (indexes V.! i)) == (s V.! (indexes V.! j))
 
-fancyEquator :: (Ix a, Ord a, Bounded a, Storable a, Show a) => V.Vector a -> V.Vector Int -> Int -> Int -> Int -> Int -> Bool
-fancyEquator s indexes h n i j = (s V.! (indexes V.! i)) == (s V.! (indexes V.! j)) && (s V.! mid1) == (s V.! mid2)
-    where mid1 = (((indexes V.! i) + (1 << h)) `mod` n)
-          mid2 = (((indexes V.! j) + (1 << h)) `mod` n)
+fancyEquator :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+             => V.Vector a -> V.Vector Int -> Int -> Int -> Int -> Int -> Bool
+fancyEquator s indexes h n i j
+    = (s V.! i') == (s V.! j') && (s V.! mid1) == (s V.! mid2)
+    where mid1 = ((i' + (1 << h)) `mod` n)
+          mid2 = ((j' + (1 << h)) `mod` n)
+          i' = indexes V.! i
+          j' = indexes V.! j
 
 -- |Generate a suffix array as list.
-suffixArray :: (Ix a, Ord a, Bounded a, Storable a, Show a) => [a] -> ([Int], [Int])
+suffixArray :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+            => [a] -> ([Int], [Int])
 suffixArray s = let p = countingSort s [0..(n - 1)]
                     equator = simpleEquator (V.fromList s) (V.fromList p)
                     c = populateClassesBy equator s p
@@ -42,7 +50,7 @@ suffixArray s = let p = countingSort s [0..(n - 1)]
             c' =  populateClassesBy equator c p'
             in go (h + 1) p' c'
 
-{- axilliary?spelling functions -}
+{- axiliary functions -}
 
 shiftList :: Int -> Int -> [Int] -> [Int]
 shiftList n h p = foldr step [] p
