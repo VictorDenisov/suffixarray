@@ -16,7 +16,8 @@ import Data.CountingSort
 (<<) = shiftL
 
 {- Equator is a function that takes two indexes and returns true if values
- - pointed by them are equal. -}
+ - pointed by them are equal.
+ -}
 type Equator = Int -> Int -> Bool
 
 simpleEquator :: (Ix a, Ord a, Bounded a, Storable a, Show a)
@@ -58,6 +59,10 @@ shiftList n h p = V.map step p
                        x' = if x < 0 then x + n else x
                      in x'
 
+{- Build composition of two lists. First argument is source list.
+ - Second argument is vector of indexes. Elements of first list should
+ - be reordered accordingly to indexes in the second argument.
+ -}
 composeLists :: [Int] -> V.Vector Int -> [Int]
 composeLists c p = unsafePerformIO $ withArray c $ \cc ->
     let go x arr = do
@@ -70,7 +75,8 @@ composeLists c p = unsafePerformIO $ withArray c $ \cc ->
     ans <- foldr go (mallocArray n) [0..(n - 1)]
     peekArray n ans where n = V.length p
 
-{- populateClassesBy implementation -}
+{- populateClassesBy implementation
+ -}
 
 populateClassesBy :: (Ix a, Ord a, Bounded a, Storable a, Show a)
                   => Equator -> [a] -> V.Vector Int -> [Int]
@@ -81,13 +87,13 @@ populateClassesBy equator s p = unsafePerformIO $ withArray s $ \ss -> do
 
 populateClassesIO :: (Ix a, Ord a, Bounded a, Storable a)
                   => Equator -> Int -> Ptr a -> V.Vector Int -> IO (Ptr Int)
-populateClassesIO equator n s p = do
+populateClassesIO equals n s p = do
         arr <- mallocArray n
         let 
             go i classNum | i == n = return ()
             go i classNum = do
                 let pcur = p V.! i
-                let newClassNum = if i `equator` (i - 1)
+                let newClassNum = if i `equals` (i - 1)
                                     then classNum
                                     else classNum + 1
                 pokeElemOff arr pcur (newClassNum - 1)
