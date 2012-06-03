@@ -25,7 +25,6 @@ countingSortIO :: (Ix a, Ord a, Bounded a, Storable a, Show a)
 countingSortIO s indexes = do
     let n = length s
     let rng = (minimum s, maximum s)
-    let ss = V.fromList s
     let occurences = countOccurences s
     let p = partialSums occurences
     pp <- V.unsafeThaw p
