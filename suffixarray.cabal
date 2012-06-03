@@ -11,6 +11,10 @@ Cabal-version:  >=1.2
 Executable runTests
         main-is:        Tests/Tests.hs
         build-depends:  base >= 3, HUnit
+Executable benchmark
+        main-is:        Tests/Benchmark.hs
+        build-depends:  base >= 3
+        ghc-options:    -rtsopts
 
 Library
         exposed-modules:        Data.SuffixArray, Data.CountingSort

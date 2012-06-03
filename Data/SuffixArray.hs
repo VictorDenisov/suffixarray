@@ -32,7 +32,7 @@ fancyEquator s indexes h n i j
           i' = indexes V.! i
           j' = indexes V.! j
 
--- |Generate a suffix array as list.
+{- |Generate a suffix array as list. -}
 suffixArray :: (Ix a, Ord a, Bounded a, Storable a, Show a)
             => [a] -> ([Int], [Int])
 suffixArray s = let p = countingSort s [0..(n - 1)]
