@@ -32,29 +32,41 @@ testSuffixArray testData answer = TestCase (
         answer (V.toList (fst $ suffixArray testData))
     )
 
+testComposeLists :: [Int] -> [Int] -> [Int] -> Test
+testComposeLists testData testIndexes answer = TestCase (
+    assertEqual
+        ("composeLists" ++ (show testData) ++ " " ++ (show testIndexes))
+        answer (composeLists testData (V.fromList testIndexes))
+    )
+
 tests = TestList
-            [ TestLabel "countOccurences tests" $ TestList
-                 [ testCountOccurences "abc" [1, 1, 1]
-                 , testCountOccurences "abb" [1, 2]
-                 , testCountOccurences "hello" [1, 0, 0, 1, 0, 0, 0, 2, 0, 0, 1]
-                 , testCountOccurences (([1, 1, 1])::[Int]) [3]
-                 , testCountOccurences (([9, 10, 12])::[Int]) [1, 1, 0, 1]
-                 , testCountOccurences "aabc" [2, 1, 1]
-                 ]
-            , TestLabel "partialSums tests" $ TestList
-                 [ testPartialSums [1, 1, 1] [1, 2, 3]
-                 , testPartialSums [1, 0, 5, 2] [1, 1, 6, 8]
-                 ]
-            , TestLabel "countingSort tests" $ TestList
-                 [ testCountingSort "bcb" [0, 1, 2] [0, 2, 1]
-                 , testCountingSort "bcb" [2, 1, 0] [2, 0, 1]
-                 ]
-            , TestLabel "suffixArray tests" $ TestList
-                 [ testSuffixArray "abcb" [0, 3, 1, 2]
-                 , testSuffixArray "aaba" [3, 0, 1, 2]
-                 , testSuffixArray "abc" [0, 1, 2]
-                 , testSuffixArray "eefdcba" [6, 5, 4, 3, 0, 1, 2]
-                 ]
+        [ TestLabel "countOccurences tests" $ TestList
+            [ testCountOccurences "abc" [1, 1, 1]
+            , testCountOccurences "abb" [1, 2]
+            , testCountOccurences "hello" [1, 0, 0, 1, 0, 0, 0, 2, 0, 0, 1]
+            , testCountOccurences (([1, 1, 1])::[Int]) [3]
+            , testCountOccurences (([9, 10, 12])::[Int]) [1, 1, 0, 1]
+            , testCountOccurences "aabc" [2, 1, 1]
             ]
+        , TestLabel "partialSums tests" $ TestList
+            [ testPartialSums [1, 1, 1] [1, 2, 3]
+            , testPartialSums [1, 0, 5, 2] [1, 1, 6, 8]
+            ]
+        , TestLabel "countingSort tests" $ TestList
+            [ testCountingSort "bcb" [0, 1, 2] [0, 2, 1]
+            , testCountingSort "bcb" [2, 1, 0] [2, 0, 1]
+            ]
+        , TestLabel "suffixArray tests" $ TestList
+            [ testSuffixArray "abcb" [0, 3, 1, 2]
+            , testSuffixArray "aaba" [3, 0, 1, 2]
+            , testSuffixArray "abc" [0, 1, 2]
+            , testSuffixArray "eefdcba" [6, 5, 4, 3, 0, 1, 2]
+            ]
+        , TestLabel "composeLists tests" $ TestList
+            [ testComposeLists [0, 1, 2] [0, 1, 2] [0, 1, 2]
+            , testComposeLists [0, 1, 2] [1, 0, 2] [1, 0, 2]
+            , testComposeLists [3, 0, 2, 1] [0, 2, 1, 3] [3, 2, 0, 1]
+            ]
+        ]
 
 main = runTestTT tests
