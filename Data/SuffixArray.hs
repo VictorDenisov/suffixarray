@@ -31,7 +31,7 @@ suffixArray s = let p = countingSort s (V.generate n id)
         go h p c | (1 << h) >= n = (p, c)
         go h p c = let
             pn = shiftList n h p
-            ck = composeLists c pn
+            ck = V.toList $ composeLists (V.fromList c) pn
             p' = countingSort ck pn
             equator = fancyEquator (V.fromList c) p' h n
             c' =  populateClassesBy equator p'
@@ -70,17 +70,8 @@ shiftList n h p = V.map step p
  - Second argument is vector of indexes. Elements of first list should
  - be reordered accordingly to indexes in the second argument.
  -}
-composeLists :: [Int] -> V.Vector Int -> [Int]
-composeLists c p = unsafePerformIO $ withArray c $ \cc ->
-    let go x arr = do
-        a <- arr
-        let pe = p V.! x
-        ce <- peekElemOff cc pe
-        pokeElemOff a x ce
-        return a
-    in do
-    ans <- foldr go (mallocArray n) [0..(n - 1)]
-    peekArray n ans where n = V.length p
+composeLists :: V.Vector Int -> V.Vector Int -> V.Vector Int
+composeLists c p = V.map (c V.!) p
 
 {- populateClassesBy implementation
  -}

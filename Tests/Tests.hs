@@ -36,8 +36,9 @@ testComposeLists :: [Int] -> [Int] -> [Int] -> Test
 testComposeLists testData testIndexes answer = TestCase (
     assertEqual
         ("composeLists" ++ (show testData) ++ " " ++ (show testIndexes))
-        answer (composeLists testData (V.fromList testIndexes))
+        answer (V.toList (composeLists testData' (V.fromList testIndexes)))
     )
+    where testData' = V.fromList testData
 
 tests = TestList
         [ TestLabel "countOccurences tests" $ TestList
