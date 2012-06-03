@@ -4,9 +4,11 @@ import Data.Ix
 import Data.SuffixArray
 import Data.CountingSort
 
-main = interact $ doSuffixArr
+import qualified Data.Vector as V
 
-dumb s = s
+main = interact doSuffixArr
+
+--dumb s = s
 
 doSuffixArr s = let (a, _) = suffixArray s
-             in (show (head a)) ++ "\n"
+             in (show (V.head a)) ++ "\n"

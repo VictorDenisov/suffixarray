@@ -15,16 +15,16 @@ import Control.Monad (forM_, zipWithM_)
 
 {- counting sort implementation -}
 
-countingSort :: (Ix a, Ord a, Bounded a, Storable a, Show a) => [a] -> [Int] -> [Int]
-countingSort s indexes = V.toList
-                       $ unsafePerformIO
+countingSort :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+             => [a] -> V.Vector Int -> V.Vector Int
+countingSort s indexes = unsafePerformIO
                        $ countingSortIO s indexes
 
-countingSortIO :: (Ix a, Ord a, Bounded a, Storable a, Show a)  => [a] -> [Int] -> IO (V.Vector Int)
+countingSortIO :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+               => [a] -> V.Vector Int -> IO (V.Vector Int)
 countingSortIO s indexes = do
     let n = length s
     let rng = (minimum s, maximum s)
-    let ind = V.fromList indexes
     let ss = V.fromList s
     let occurences = countOccurences s
     let p = partialSums occurences
@@ -32,17 +32,17 @@ countingSortIO s indexes = do
     ans <- MVector.replicate n 0
     iforeachr s $ \i x -> do
         pos <- pp `MVector.read` (index rng x)
-        MVector.write ans (pos - 1) (ind V.! i)
+        MVector.write ans (pos - 1) (indexes V.! i)
         MVector.write pp (index rng x) (pos - 1)
     V.unsafeFreeze ans
 
-iforeachr :: (Ix a, Ord a, Bounded a, Storable a, Show a)  => [a] -> (Int -> a -> IO ()) -> IO ()
+iforeachr :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+          => [a] -> (Int -> a -> IO ()) -> IO ()
 iforeachr s f = zipWithM_ f (reverse [0..(n - 1)]) (reverse s)
     where
         n = length s
 
 {- partial sums implementation -}
-
 
 partialSums :: V.Vector Int -> V.Vector Int
 partialSums = V.postscanl (+) 0
