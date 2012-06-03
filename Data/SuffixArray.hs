@@ -13,6 +13,26 @@ import qualified Data.Vector as V
 
 import Data.CountingSort
 
+{- |Generate a suffix array as list. -}
+suffixArray :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+            => [a] -> (V.Vector Int, [Int])
+suffixArray s = let p = countingSort s (V.generate n id)
+                    equator = simpleEquator (V.fromList s) p
+                    c = populateClassesBy equator p
+                in go 0 p c
+    where
+        n = length s
+        go h p c | (1 << h) >= n = (p, c)
+        go h p c = let
+            pn = shiftList n h p
+            ck = composeLists c pn
+            p' = countingSort ck pn
+            equator = fancyEquator (V.fromList c) p' h n
+            c' =  populateClassesBy equator p'
+            in go (h + 1) p' c'
+
+{- axiliary functions -}
+
 (<<) = shiftL
 
 {- Equator is a function that takes two indexes and returns true if values
@@ -33,25 +53,6 @@ fancyEquator s indexes h n i j
           i' = indexes V.! i
           j' = indexes V.! j
 
-{- |Generate a suffix array as list. -}
-suffixArray :: (Ix a, Ord a, Bounded a, Storable a, Show a)
-            => [a] -> (V.Vector Int, [Int])
-suffixArray s = let p = countingSort s (V.generate n id)
-                    equator = simpleEquator (V.fromList s) p
-                    c = populateClassesBy equator s p
-                in go 0 p c
-    where
-        n = length s
-        go h p c | (1 << h) >= n = (p, c)
-        go h p c = let
-            pn = shiftList n h p
-            ck = composeLists c pn
-            p' = countingSort ck pn
-            equator = fancyEquator (V.fromList c) p' h n
-            c' =  populateClassesBy equator c p'
-            in go (h + 1) p' c'
-
-{- axiliary functions -}
 
 shiftList :: Int -> Int -> V.Vector Int -> V.Vector Int
 shiftList n h p = V.map step p
@@ -78,16 +79,15 @@ composeLists c p = unsafePerformIO $ withArray c $ \cc ->
 {- populateClassesBy implementation
  -}
 
-populateClassesBy :: (Ix a, Ord a, Bounded a, Storable a, Show a)
-                  => Equator -> [a] -> V.Vector Int -> [Int]
-populateClassesBy equator s p = unsafePerformIO $ withArray s $ \ss -> do
-        ans <- populateClassesIO equator n ss p
+populateClassesBy :: Equator -> V.Vector Int -> [Int]
+populateClassesBy equator p = unsafePerformIO $ do
+        ans <- populateClassesIO equator p
         peekArray n ans
-    where n = length s
+    where n = V.length p
 
-populateClassesIO :: (Ix a, Ord a, Bounded a, Storable a)
-                  => Equator -> Int -> Ptr a -> V.Vector Int -> IO (Ptr Int)
-populateClassesIO equals n s p = do
+populateClassesIO :: Equator -> V.Vector Int -> IO (Ptr Int)
+populateClassesIO equals p = do
+        let n = V.length p
         arr <- mallocArray n
         let 
             go i classNum | i == n = return ()
