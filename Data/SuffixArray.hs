@@ -20,7 +20,7 @@ import qualified Data.Vector as V
 import Data.CountingSort
 
 {- |Generate a suffix array as list. -}
-suffixArray :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+suffixArray :: (Ix a, Ord a, Bounded a)
             => [a] -> (V.Vector Int, [Int])
 suffixArray s = let p = countingSort s (V.generate n id)
                     equator = simpleEquator (V.fromList s) p
@@ -46,11 +46,11 @@ suffixArray s = let p = countingSort s (V.generate n id)
  -}
 type Equator = Int -> Int -> Bool
 
-simpleEquator :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+simpleEquator :: (Ix a, Ord a, Bounded a)
                => V.Vector a -> V.Vector Int -> Int -> Int -> Bool
 simpleEquator s indexes i j = (s V.! (indexes V.! i)) == (s V.! (indexes V.! j))
 
-fancyEquator :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+fancyEquator :: (Ix a, Ord a, Bounded a)
              => V.Vector a -> V.Vector Int -> Int -> Int -> Int -> Int -> Bool
 fancyEquator s indexes h n i j
     = (s V.! i') == (s V.! j') && (s V.! mid1) == (s V.! mid2)

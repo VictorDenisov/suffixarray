@@ -15,12 +15,12 @@ import Control.Monad (forM_, zipWithM_)
 
 {- counting sort implementation -}
 
-countingSort :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+countingSort :: (Ix a, Ord a, Bounded a)
              => [a] -> V.Vector Int -> V.Vector Int
 countingSort s indexes = unsafePerformIO
                        $ countingSortIO s indexes
 
-countingSortIO :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+countingSortIO :: (Ix a, Ord a, Bounded a)
                => [a] -> V.Vector Int -> IO (V.Vector Int)
 countingSortIO s indexes = do
     let n = length s
@@ -35,7 +35,7 @@ countingSortIO s indexes = do
         MVector.write pp (index rng x) (pos - 1)
     V.unsafeFreeze ans
 
-iforeachr :: (Ix a, Ord a, Bounded a, Storable a, Show a)
+iforeachr :: (Ix a, Ord a, Bounded a)
           => [a] -> (Int -> a -> IO ()) -> IO ()
 iforeachr s f = zipWithM_ f (reverse [0..(n - 1)]) (reverse s)
     where
