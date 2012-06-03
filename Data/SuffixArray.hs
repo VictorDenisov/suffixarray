@@ -1,5 +1,11 @@
 module Data.SuffixArray
-(suffixArray) where
+( suffixArray
+, simpleEquator
+, fancyEquator
+, shiftList
+, composeLists
+, populateClassesBy
+) where
 
 import Data.Ix
 import Data.List (foldl', (!!))
