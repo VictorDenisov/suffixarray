@@ -25,7 +25,7 @@ countingSortIO :: (Ix a, Ord a, Bounded a)
 countingSortIO s indexes = do
     let n = length s
     let rng = (minimum s, maximum s)
-    let occurences = countOccurences s
+    let occurences = countOccurences (V.fromList s)
     let p = partialSums occurences
     pp <- V.unsafeThaw p
     ans <- MVector.replicate n 0
@@ -52,12 +52,12 @@ partialSums = V.postscanl (+) 0
             
 {- count occurences implementation -}
 
-countOccurences :: (Ix a, Ord a, Bounded a) => [a] -> V.Vector Int
+countOccurences :: (Ix a, Ord a, Bounded a) => V.Vector a -> V.Vector Int
 countOccurences s = unsafePerformIO $ do
-    let rng = (minimum s, maximum s)
+    let rng = (V.minimum s, V.maximum s)
     let rs = rangeSize rng
     arr <- MVector.replicate rs 0
-    forM_ s $ \c -> do
+    V.forM_ s $ \c -> do
         let a = index rng c
         value <- MVector.read arr a
         MVector.write arr a (value + 1)

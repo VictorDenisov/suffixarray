@@ -10,7 +10,7 @@ import qualified Data.Vector as V
 testCountOccurences :: (Ix a, Ord a, Bounded a, Show a)  => [a] -> [Int] -> Test
 testCountOccurences testData answer = TestCase (
     assertEqual ("countOccurences " ++ (show testData))
-        answer (V.toList $ countOccurences testData)
+        answer (V.toList $ countOccurences (V.fromList testData))
     )
 
 testPartialSums :: [Int] -> [Int] -> Test
