@@ -47,11 +47,11 @@ suffixArray s = let p = countingSort (V.fromList s) (V.generate n id)
 type Equator = Int -> Int -> Bool
 
 simpleEquator :: (Ix a, Ord a, Bounded a)
-               => V.Vector a -> V.Vector Int -> Int -> Int -> Bool
+               => V.Vector a -> V.Vector Int -> Equator
 simpleEquator s indexes i j = (s V.! (indexes V.! i)) == (s V.! (indexes V.! j))
 
 fancyEquator :: (Ix a, Ord a, Bounded a)
-             => V.Vector a -> V.Vector Int -> Int -> Int -> Int -> Int -> Bool
+             => V.Vector a -> V.Vector Int -> Int -> Int -> Equator
 fancyEquator s indexes h n i j
     = (s V.! i') == (s V.! j') && (s V.! mid1) == (s V.! mid2)
     where mid1 = ((i' + (1 << h)) `mod` n)
