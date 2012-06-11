@@ -22,7 +22,7 @@ import Data.CountingSort
 {- |Generate a suffix array as list. -}
 suffixArray :: (Ix a, Ord a, Bounded a)
             => [a] -> (V.Vector Int, [Int])
-suffixArray s = let p = countingSort s (V.generate n id)
+suffixArray s = let p = countingSort (V.fromList s) (V.generate n id)
                     equator = simpleEquator (V.fromList s) p
                     c = populateClassesBy equator p
                 in go 0 p c
@@ -32,7 +32,7 @@ suffixArray s = let p = countingSort s (V.generate n id)
         go h p c = let
             pn = shiftList n h p
             ck = V.toList $ composeLists (V.fromList c) pn
-            p' = countingSort ck pn
+            p' = countingSort (V.fromList ck) pn
             equator = fancyEquator (V.fromList c) p' h n
             c' =  populateClassesBy equator p'
             in go (h + 1) p' c'

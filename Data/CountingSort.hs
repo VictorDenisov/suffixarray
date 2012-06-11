@@ -16,20 +16,20 @@ import Control.Monad (forM_, zipWithM_)
 {- counting sort implementation -}
 
 countingSort :: (Ix a, Ord a, Bounded a)
-             => [a] -> V.Vector Int -> V.Vector Int
+             => V.Vector a -> V.Vector Int -> V.Vector Int
 countingSort s indexes = unsafePerformIO
                        $ countingSortIO s indexes
 
 countingSortIO :: (Ix a, Ord a, Bounded a)
-               => [a] -> V.Vector Int -> IO (V.Vector Int)
+               => V.Vector a -> V.Vector Int -> IO (V.Vector Int)
 countingSortIO s indexes = do
-    let n = length s
-    let rng = (minimum s, maximum s)
-    let occurences = countOccurences (V.fromList s)
+    let n = V.length s
+    let rng = (V.minimum s, V.maximum s)
+    let occurences = countOccurences s
     let p = partialSums occurences
     pp <- V.unsafeThaw p
     ans <- MVector.replicate n 0
-    iforeachr (V.fromList s) $ \i x -> do
+    iforeachr s $ \i x -> do
         pos <- pp `MVector.read` (index rng x)
         MVector.write ans (pos - 1) (indexes V.! i)
         MVector.write pp (index rng x) (pos - 1)

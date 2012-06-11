@@ -23,7 +23,7 @@ testCountingSort :: String -> [Int] -> [Int] -> Test
 testCountingSort testList testIndexes answer = TestCase (
     assertEqual
         ("countingSort " ++ (show testList) ++ " " ++ (show testIndexes))
-        answer (V.toList (countingSort testList (V.fromList testIndexes)))
+        answer (V.toList (countingSort (V.fromList testList) (V.fromList testIndexes)))
     )
 
 testSuffixArray :: String -> [Int] -> Test
