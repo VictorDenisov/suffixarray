@@ -17,12 +17,7 @@ import Control.Monad (forM_, zipWithM_)
 
 countingSort :: (Ix a, Ord a, Bounded a)
              => V.Vector a -> V.Vector Int -> V.Vector Int
-countingSort s indexes = unsafePerformIO
-                       $ countingSortIO s indexes
-
-countingSortIO :: (Ix a, Ord a, Bounded a)
-               => V.Vector a -> V.Vector Int -> IO (V.Vector Int)
-countingSortIO s indexes = do
+countingSort s indexes = unsafePerformIO $ do
     let n = V.length s
     let rng = (V.minimum s, V.maximum s)
     let occurences = countOccurences s
