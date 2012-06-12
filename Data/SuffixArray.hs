@@ -16,12 +16,13 @@ import Foreign.Ptr
 import Data.Bits (shiftL)
 import Debug.Trace
 import qualified Data.Vector as V
+import qualified Data.Vector.Generic.Mutable as MVector
 
 import Data.CountingSort
 
 {- |Generate a suffix array as list. -}
 suffixArray :: (Ix a, Ord a, Bounded a)
-            => [a] -> (V.Vector Int, [Int])
+            => [a] -> (V.Vector Int, V.Vector Int)
 suffixArray s = let p = countingSort (V.fromList s) (V.generate n id)
                     equator = simpleEquator (V.fromList s) p
                     c = populateClassesBy equator p
@@ -31,9 +32,9 @@ suffixArray s = let p = countingSort (V.fromList s) (V.generate n id)
         go h p c | (1 << h) >= n = (p, c)
         go h p c = let
             pn = shiftList n h p
-            ck = V.toList $ composeLists (V.fromList c) pn
+            ck = V.toList $ composeLists c pn
             p' = countingSort (V.fromList ck) pn
-            equator = fancyEquator (V.fromList c) p' h n
+            equator = fancyEquator c p' h n
             c' =  populateClassesBy equator p'
             in go (h + 1) p' c'
 
@@ -76,16 +77,14 @@ composeLists c indexes = V.map (c V.!) indexes
 {- populateClassesBy implementation
  -}
 
-populateClassesBy :: Equator -> V.Vector Int -> [Int]
-populateClassesBy equator p = unsafePerformIO $ do
-        ans <- populateClassesIO equator p
-        peekArray n ans
-    where n = V.length p
+populateClassesBy :: Equator -> V.Vector Int -> V.Vector Int
+populateClassesBy equator p = unsafePerformIO $
+        populateClassesIO equator p
 
-populateClassesIO :: Equator -> V.Vector Int -> IO (Ptr Int)
+populateClassesIO :: Equator -> V.Vector Int -> IO (V.Vector Int)
 populateClassesIO equals p = do
         let n = V.length p
-        arr <- mallocArray n
+        arr <- MVector.replicate n 0
         let 
             go i classNum | i == n = return ()
             go i classNum = do
@@ -93,8 +92,8 @@ populateClassesIO equals p = do
                 let newClassNum = if i `equals` (i - 1)
                                     then classNum
                                     else classNum + 1
-                pokeElemOff arr pcur (newClassNum - 1)
+                MVector.write arr pcur (newClassNum - 1)
                 go (i + 1) newClassNum
         go 1 1
-        return arr
+        V.unsafeFreeze arr
 
