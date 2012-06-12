@@ -71,7 +71,7 @@ shiftList n h p = V.map step p
  - be reordered accordingly to indexes in the second argument.
  -}
 composeLists :: V.Vector Int -> V.Vector Int -> V.Vector Int
-composeLists c p = V.map (c V.!) p
+composeLists c indexes = V.map (c V.!) indexes
 
 {- populateClassesBy implementation
  -}

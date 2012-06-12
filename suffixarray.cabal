@@ -14,8 +14,9 @@ Executable runTests
 Executable benchmark
         main-is:        Tests/Benchmark.hs
         build-depends:  base >= 3
-        ghc-options:    -rtsopts
+        ghc-options:    -rtsopts -O2
 
 Library
         exposed-modules:        Data.SuffixArray, Data.CountingSort
         build-depends:          base >= 3, array, vector
+        ghc-options:            -O2

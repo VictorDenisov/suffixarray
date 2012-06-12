@@ -52,7 +52,8 @@ partialSums = V.postscanl (+) 0
             
 {- count occurences implementation -}
 
-countOccurences :: (Ix a, Ord a, Bounded a) => V.Vector a -> V.Vector Int
+countOccurences :: (Ix a, Ord a, Bounded a)
+                => V.Vector a -> V.Vector Int
 countOccurences s = unsafePerformIO $ do
     let rng = (V.minimum s, V.maximum s)
     let rs = rangeSize rng
