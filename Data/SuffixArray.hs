@@ -78,11 +78,7 @@ composeLists c indexes = V.map (c V.!) indexes
  -}
 
 populateClassesBy :: Equator -> V.Vector Int -> V.Vector Int
-populateClassesBy equator p = unsafePerformIO $
-        populateClassesIO equator p
-
-populateClassesIO :: Equator -> V.Vector Int -> IO (V.Vector Int)
-populateClassesIO equals p = do
+populateClassesBy equals p = unsafePerformIO $ do
         let n = V.length p
         arr <- MVector.replicate n 0
         let 
