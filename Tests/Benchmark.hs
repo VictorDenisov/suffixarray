@@ -10,5 +10,5 @@ main = interact doSuffixArr
 
 --dumb s = s
 
-doSuffixArr s = let (a, _) = suffixArray s
+doSuffixArr s = let SuffixArray a _ = suffixArray $ V.fromList s
              in (show (V.head a)) ++ "\n"

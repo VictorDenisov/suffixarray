@@ -29,8 +29,9 @@ testCountingSort testList testIndexes answer = TestCase (
 testSuffixArray :: String -> [Int] -> Test
 testSuffixArray testData answer = TestCase (
     assertEqual ("suffixArray " ++ (show testData))
-        answer (V.toList (fst $ suffixArray testData))
+        answer (V.toList myAnswer)
     )
+    where SuffixArray _ myAnswer = suffixArray $ V.fromList testData
 
 testComposeLists :: [Int] -> [Int] -> [Int] -> Test
 testComposeLists testData testIndexes answer = TestCase (

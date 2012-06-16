@@ -1,10 +1,34 @@
+{- |
+ - Module      : Data.SuffixArray
+ - Copyright   : (c) 2010 Daniël de Kok (c) 2012 Victor Denisov
+ - License     : BSD3
+ -
+ - Maintainer  : Daniël de Kok <me@danieldk.eu> Victor Denisov <denisovenator@gmail.com>
+ - Stability   : experimental
+ -
+ - Construction of suffix arrays (arrays ordered by suffix). Given an
+ - array /d/ elements, the suffix array is a sorted array of the sub-arrays
+ - in /d/. For instance, the suffix array of /banana apple pear apple/ is:
+ -
+ - * apple
+ -
+ - * apple pear apple
+ -
+ - * banana apple pear apple
+ -
+ - * pear apple
+ -}
+
 module Data.SuffixArray
-( suffixArray
+( SuffixArray(..)
+, suffixArray
 , simpleEquator
 , fancyEquator
 , shiftList
 , composeLists
 , populateClassesBy
+, fromList
+, toList
 ) where
 
 import Data.Ix
@@ -20,16 +44,40 @@ import qualified Data.Vector.Generic.Mutable as MVector
 
 import Data.CountingSort
 
+data SuffixArray a = SuffixArray (V.Vector a) (V.Vector Int)
+                 deriving Show
+
+{- |
+ - 'elems' provides a vector of each element in the suffix array. One element
+ - of the suffix array contains the full data array.
+ -}
+elems :: SuffixArray a -> V.Vector (V.Vector a)
+elems (SuffixArray d i) = V.map vecAt i
+    where vecAt idx = V.drop idx d
+
+{- |
+ - 'fromList' constructs a suffix array from a list of elements.
+ -}
+fromList :: (Ix a, Ord a, Bounded a) => [a] -> SuffixArray a
+fromList = suffixArray . V.fromList
+
+{- |
+ - 'toList' constructs a list from a suffix array.
+ -}
+toList :: SuffixArray a -> [[a]]
+toList (SuffixArray d i) = V.foldr vecAt [] i
+    where vecAt idx l = V.toList (V.drop idx d) : l 
+
 {- |Generate a suffix array as list. -}
 suffixArray :: (Ix a, Ord a, Bounded a)
-            => [a] -> (V.Vector Int, V.Vector Int)
-suffixArray s = let p = countingSort (V.fromList s) (V.generate n id)
-                    equator = simpleEquator (V.fromList s) p
+            => V.Vector a -> SuffixArray a
+suffixArray s = let p = countingSort s (V.generate n id)
+                    equator = simpleEquator s p
                     c = populateClassesBy equator p
                 in go 0 p c
     where
-        n = length s
-        go h p c | (1 << h) >= n = (p, c)
+        n = V.length s
+        go h p c | (1 << h) >= n = SuffixArray s p
         go h p c = let
             pn = shiftList n h p
             ck = V.toList $ composeLists c pn
@@ -79,17 +127,17 @@ composeLists c indexes = V.map (c V.!) indexes
 
 populateClassesBy :: Equator -> V.Vector Int -> V.Vector Int
 populateClassesBy equals p = unsafePerformIO $ do
-        let n = V.length p
-        arr <- MVector.replicate n 0
-        let 
-            go i classNum | i == n = return ()
-            go i classNum = do
-                let pcur = p V.! i
-                let newClassNum = if i `equals` (i - 1)
-                                    then classNum
-                                    else classNum + 1
-                MVector.write arr pcur (newClassNum - 1)
-                go (i + 1) newClassNum
-        go 1 1
-        V.unsafeFreeze arr
+    let n = V.length p
+    arr <- MVector.replicate n 0
+    let
+        go i classNum | i == n = return ()
+        go i classNum = do
+            let pcur = p V.! i
+            let newClassNum = if i `equals` (i - 1)
+                                then classNum
+                                else classNum + 1
+            MVector.write arr pcur (newClassNum - 1)
+            go (i + 1) newClassNum
+    go 1 1
+    V.unsafeFreeze arr
 
