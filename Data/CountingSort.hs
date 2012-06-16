@@ -1,3 +1,9 @@
+{- |
+ - Module      : Data.CountingSort
+ - License     : GPL2
+ -
+ - Stability   : experimental
+ -}
 module Data.CountingSort where
 
 import Data.Ix
@@ -7,7 +13,6 @@ import Foreign.Storable
 import Foreign.Marshal.Array
 import Foreign.Ptr
 import Data.Bits (shiftL)
-import Data.Array.IArray
 import Debug.Trace
 import qualified Data.Vector as V
 import qualified Data.Vector.Generic.Mutable as MVector

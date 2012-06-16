@@ -1,7 +1,7 @@
 {- |
  - Module      : Data.SuffixArray
  - Copyright   : (c) 2010 Daniël de Kok (c) 2012 Victor Denisov
- - License     : BSD3
+ - License     : GPL2
  -
  - Maintainer  : Daniël de Kok <me@danieldk.eu> Victor Denisov <denisovenator@gmail.com>
  - Stability   : experimental
