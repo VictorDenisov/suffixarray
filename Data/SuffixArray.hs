@@ -1,23 +1,23 @@
-{- |
- - Module      : Data.SuffixArray
- - Copyright   : (c) 2010 Daniël de Kok (c) 2012 Victor Denisov
- - License     : GPL2
- -
- - Maintainer  : Daniël de Kok <me@danieldk.eu> Victor Denisov <denisovenator@gmail.com>
- - Stability   : experimental
- -
- - Construction of suffix arrays (arrays ordered by suffix). Given an
- - array /d/ elements, the suffix array is a sorted array of the sub-arrays
- - in /d/. For instance, the suffix array of /banana apple pear apple/ is:
- -
- - * apple
- -
- - * apple pear apple
- -
- - * banana apple pear apple
- -
- - * pear apple
- -}
+-- |
+-- Module      : Data.SuffixArray
+-- Copyright   : (c) 2010 Daniël de Kok (c) 2012 Victor Denisov
+-- License     : GPL2
+--
+-- Maintainer  : Daniël de Kok <me@danieldk.eu> Victor Denisov <denisovenator@gmail.com>
+-- Stability   : experimental
+--
+-- Construction of suffix arrays (arrays ordered by suffix). Given an
+-- array /d/ elements, the suffix array is a sorted array of the sub-arrays
+-- in /d/. For instance, the suffix array of /banana apple pear apple/ is:
+--
+-- * apple
+--
+-- * apple pear apple
+--
+-- * banana apple pear apple
+--
+-- * pear apple
+--
 
 module Data.SuffixArray
 ( SuffixArray(..)
@@ -29,6 +29,7 @@ module Data.SuffixArray
 , populateClassesBy
 , fromList
 , toList
+, elems
 ) where
 
 import Data.Ix
@@ -47,28 +48,28 @@ import Data.CountingSort
 data SuffixArray a = SuffixArray (V.Vector a) (V.Vector Int)
                  deriving Show
 
-{- |
- - 'elems' provides a vector of each element in the suffix array. One element
- - of the suffix array contains the full data array.
- -}
+-- |
+-- 'elems' provides a vector of each element in the suffix array. One element
+-- of the suffix array contains the full data array.
+--
 elems :: SuffixArray a -> V.Vector (V.Vector a)
 elems (SuffixArray d i) = V.map vecAt i
     where vecAt idx = V.drop idx d
 
-{- |
- - 'fromList' constructs a suffix array from a list of elements.
- -}
+-- |
+-- 'fromList' constructs a suffix array from a list of elements.
+--
 fromList :: (Ix a, Ord a, Bounded a) => [a] -> SuffixArray a
 fromList = suffixArray . V.fromList
 
-{- |
- - 'toList' constructs a list from a suffix array.
- -}
+-- |
+-- 'toList' constructs a list from a suffix array.
+--
 toList :: SuffixArray a -> [[a]]
 toList (SuffixArray d i) = V.foldr vecAt [] i
     where vecAt idx l = V.toList (V.drop idx d) : l 
 
-{- |Generate a suffix array as list. -}
+-- |Generate a suffix array as list.
 suffixArray :: (Ix a, Ord a, Bounded a)
             => V.Vector a -> SuffixArray a
 suffixArray s = let p = countingSort s (V.generate n id)
@@ -115,7 +116,8 @@ shiftList n h p = V.map step p
                        x' = if x < 0 then x + n else x
                      in x'
 
-{- Build composition of two lists. First argument is source list.
+{- |
+ - Build composition of two lists. First argument is source list.
  - Second argument is vector of indexes. Elements of first list should
  - be reordered accordingly to indexes in the second argument.
  -}

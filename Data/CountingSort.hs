@@ -1,9 +1,12 @@
-{- |
- - Module      : Data.CountingSort
- - License     : GPL2
- -
- - Stability   : experimental
- -}
+-- |
+-- Module      : Data.CountingSort
+-- Copyright   : (c) 2012 Victor Denisov
+-- License     : GPL2
+--
+-- Maintainer  : Victor Denisov <denisovenator@gmail.com>
+--
+-- Stability   : experimental
+--
 module Data.CountingSort where
 
 import Data.Ix

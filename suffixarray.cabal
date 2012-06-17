@@ -1,5 +1,5 @@
 Name:           suffixarray
-Version:        0.0.3
+Version:        0.0.3.1
 Description:    n log n implementation of suffix array.
 Synopsis:       n log n implementation of suffix array.
 Copyright:	2010 Daniël de Kok, 2012 Victor Denisov
@@ -18,7 +18,7 @@ Executable runTests
 Executable benchmark
         main-is:        Tests/Benchmark.hs
         build-depends:  base >= 3 && <= 4.5.0.0
-        ghc-options:    -rtsopts -O2
+        ghc-options:    -rtsopts
 
 Library
         exposed-modules:        Data.SuffixArray, Data.CountingSort
