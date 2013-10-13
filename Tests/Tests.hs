@@ -63,6 +63,14 @@ tests = TestList
             , testSuffixArray "aaba" [3, 0, 1, 2]
             , testSuffixArray "abc" [0, 1, 2]
             , testSuffixArray "eefdcba" [6, 5, 4, 3, 0, 1, 2]
+            -- the difference in the following 2 tests is due to the fact
+            -- that the algorithm builds ordered cyclic shifts of the string.
+            -- to get an actual suffix array, a "sentinel" element that is
+            -- lexicographically smaller than all other elements in the input
+            -- must be appended to the input sequence. see 
+            -- https://github.com/VictorDenisov/suffixarray/issues/1 for details.
+            , testSuffixArray "ababcabab" [5, 7, 0, 2, 6, 8, 1, 3, 4]
+            , testSuffixArray "ababcabab\0" [9, 7, 5, 0, 2, 8, 6, 1, 3, 4]
             ]
         , TestLabel "composeLists tests" $ TestList
             [ testComposeLists [0, 1, 2] [0, 1, 2] [0, 1, 2]
