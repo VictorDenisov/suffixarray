@@ -8,15 +8,26 @@
 --
 -- Construction of suffix arrays (arrays ordered by suffix). Given an
 -- array /d/ elements, the suffix array is a sorted array of the sub-arrays
--- in /d/. For instance, the suffix array of /banana apple pear apple/ is:
+-- in /d/. For instance, the suffix array of /banana apple pear apple $/ is:
 --
--- * apple
+-- * $
 --
--- * apple pear apple
+-- * apple $
 --
--- * banana apple pear apple
+-- * apple pear apple $
 --
--- * pear apple
+-- * banana apple pear apple $
+--
+-- * pear apple $
+--
+-- Note: The "sentinel" element '$' is required by the implementation of the suffix 
+-- array construction algorithm. For any input '[a]', a sentinel element of type 'a' 
+-- that always compares as smaller than all other elements in the input must be 
+-- appended to the input.
+--
+-- For example, the string "!!!" would have worked equally well in place of 
+-- '$' in the example above because it would always be lexicographically 
+-- smaller than the other words in the input.
 --
 
 module Data.SuffixArray
